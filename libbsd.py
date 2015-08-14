@@ -53,6 +53,7 @@ def rtems(mm):
             'local/miibus_if.c',
             'local/pcib_if.c',
             'local/pci_if.c',
+            'local/sdhci_if.c',
             'local/usb_if.c',
             'local/mmcbus_if.c',
             'local/mmcbr_if.c',
@@ -2534,6 +2535,7 @@ def tests(mm):
     mod.addTest(mm.generator['test']('swi01', ['init', 'swi_test']))
     mod.addTest(mm.generator['test']('timeout01', ['init', 'timeout_test']))
     mod.addTest(mm.generator['test']('init01', ['test_main']))
+    mod.addTest(mm.generator['test']('sdhci01', ['test_main']))
     mod.addTest(mm.generator['test']('thread01', ['test_main']))
     mod.addTest(mm.generator['test']('mutex01', ['test_main']))
     mod.addTest(mm.generator['test']('condvar01', ['test_main']))
