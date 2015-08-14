@@ -178,4 +178,22 @@ RTEMS_BSD_DEFINE_NEXUS_DEVICE(tsec, 0, RTEMS_ARRAY_SIZE(tsec0_res),
 
 #endif /* !QORIQ_CHIP_IS_T_VARIANT(QORIQ_CHIP_VARIANT) */
 
+#elif defined(LIBBSP_ARM_RASPBERRYPI_BSP_H)
+
+#include <bsp/raspberrypi.h>
+
+static const rtems_bsd_device_resource rpi_emmc_res[] = {
+	{
+		.type = RTEMS_BSD_RES_MEMORY,
+		.start_request = 0,
+		.start_actual = BCM2835_EMMC_BASE
+	}
+};
+
+RTEMS_BSD_DEFINE_NEXUS_DEVICE(sdhci, 0, RTEMS_ARRAY_SIZE(rpi_emmc_res),
+    &rpi_emmc_res[0]);
+
+SYSINIT_DRIVER_REFERENCE(mmc, sdhci);
+SYSINIT_DRIVER_REFERENCE(mmcsd, mmc);
+
 #endif

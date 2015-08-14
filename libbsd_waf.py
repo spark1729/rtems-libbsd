@@ -951,6 +951,7 @@ def build(bld):
               'rtemsbsd/local/mmcbus_if.c',
               'rtemsbsd/local/pci_if.c',
               'rtemsbsd/local/pcib_if.c',
+              'rtemsbsd/local/sdhci_if.c',
               'rtemsbsd/local/usb_if.c',
               'rtemsbsd/mdns/mdns-hostname-default.c',
               'rtemsbsd/mdns/mdns.c',
@@ -1299,6 +1300,16 @@ def build(bld):
                 cflags = cflags,
                 includes = includes,
                 source = test_rwlock01,
+                use = ["bsd"],
+                lib = ["m", "z"],
+                install_path = None)
+
+    test_sdhci01 = ['testsuite/sdhci01/test_main.c']
+    bld.program(target = "sdhci01.exe",
+                features = "cprogram",
+                cflags = cflags,
+                includes = includes,
+                source = test_sdhci01,
                 use = ["bsd"],
                 lib = ["m", "z"],
                 install_path = None)
