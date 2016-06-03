@@ -43,9 +43,11 @@ __FBSDID("$FreeBSD$");
 
 #include <machine/bus.h>
 
+#ifndef __rtems__
 #include <dev/fdt/fdt_common.h>
 #include <dev/ofw/ofw_bus.h>
 #include <dev/ofw/ofw_bus_subr.h>
+#endif /* __rtems__ */
 
 #include <dev/mmc/bridge.h>
 #include <dev/mmc/mmcreg.h>
@@ -57,6 +59,10 @@ __FBSDID("$FreeBSD$");
 #include "bcm2835_dma.h"
 #include <arm/broadcom/bcm2835/bcm2835_mbox_prop.h>
 #include "bcm2835_vcbus.h"
+
+#ifdef __rtems__
+#define BUS_SPACE_PHYSADDR(res, offs) ((u_int)(rman_get_start(res)+(offs)))
+#endif /* __rtems__ */
 
 #define	BCM2835_DEFAULT_SDHCI_FREQ	50
 
@@ -125,11 +131,13 @@ static int
 bcm_sdhci_probe(device_t dev)
 {
 
+#ifndef __rtems__
 	if (!ofw_bus_status_okay(dev))
 		return (ENXIO);
 
 	if (!ofw_bus_is_compatible(dev, "broadcom,bcm2835-sdhci"))
 		return (ENXIO);
+#endif /* __rtems__ */
 
 	device_set_desc(dev, "Broadcom 2708 SDHCI controller");
 	return (BUS_PROBE_DEFAULT);
@@ -140,8 +148,10 @@ bcm_sdhci_attach(device_t dev)
 {
 	struct bcm_sdhci_softc *sc = device_get_softc(dev);
 	int rid, err;
+#ifndef __rtems__
 	phandle_t node;
 	pcell_t cell;
+#endif /* __rtems__ */
 	u_int default_freq;
 
 	sc->sc_dev = dev;
@@ -162,12 +172,14 @@ bcm_sdhci_attach(device_t dev)
 		/* Convert to MHz */
 		default_freq /= 1000000;
 	}
+#ifndef __rtems__
 	if (default_freq == 0) {
 		node = ofw_bus_get_node(sc->sc_dev);
 		if ((OF_getencprop(node, "clock-frequency", &cell,
 		    sizeof(cell))) > 0)
 			default_freq = cell / 1000000;
 	}
+#endif /* __rtems__ */
 	if (default_freq == 0)
 		default_freq = BCM2835_DEFAULT_SDHCI_FREQ;
 
@@ -671,7 +683,14 @@ static driver_t bcm_sdhci_driver = {
 	sizeof(struct bcm_sdhci_softc),
 };
 
+#ifndef __rtems__
 DRIVER_MODULE(sdhci_bcm, simplebus, bcm_sdhci_driver, bcm_sdhci_devclass, 0, 0);
 MODULE_DEPEND(sdhci_bcm, sdhci, 1, 1, 1);
+#else /* __rtems__ */
+DRIVER_MODULE(sdhci_bcm, nexus, bcm_sdhci_driver, bcm_sdhci_devclass, 0, 0);
+MODULE_DEPEND(sdhci_bcm, sdhci, 1, 1, 1);
+#endif  /* __rtems__ */
+#ifndef __rtems__
 DRIVER_MODULE(mmc, sdhci_bcm, mmc_driver, mmc_devclass, NULL, NULL);
 MODULE_DEPEND(sdhci_bcm, mmc, 1, 1, 1);
+#endif /* __rtems__ */

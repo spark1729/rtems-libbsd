@@ -40,8 +40,10 @@ __FBSDID("$FreeBSD$");
 #include <sys/rman.h>
 #include <machine/bus.h>
 
+#ifndef __rtems__
 #include <dev/ofw/ofw_bus.h>
 #include <dev/ofw/ofw_bus_subr.h>
+#endif /* __rtems__ */
 
 #include <arm/broadcom/bcm2835/bcm2835_mbox.h>
 #include <arm/broadcom/bcm2835/bcm2835_mbox_prop.h>
@@ -137,6 +139,7 @@ static int
 bcm_mbox_probe(device_t dev)
 {
 
+#ifndef __rtems__
 	if (!ofw_bus_status_okay(dev))
 		return (ENXIO);
 
@@ -145,6 +148,8 @@ bcm_mbox_probe(device_t dev)
 		return(BUS_PROBE_DEFAULT);
 	}
 
+#endif /* __rtems__ */
+	device_set_desc(dev, "BCM2835 VideoCore Mailbox");
 	return (ENXIO);
 }
 
@@ -283,7 +288,11 @@ static driver_t bcm_mbox_driver = {
 
 static devclass_t bcm_mbox_devclass;
 
+#ifndef __rtems__
 DRIVER_MODULE(mbox, simplebus, bcm_mbox_driver, bcm_mbox_devclass, 0, 0);
+#else /* __rtems__ */
+DRIVER_MODULE(mbox, nexus, bcm_mbox_driver, bcm_mbox_devclass, 0, 0);
+#endif /* __rtems__ */
 
 static void
 bcm2835_mbox_dma_cb(void *arg, bus_dma_segment_t *segs, int nseg, int err)

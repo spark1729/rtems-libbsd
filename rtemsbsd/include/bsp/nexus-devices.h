@@ -181,19 +181,50 @@ RTEMS_BSD_DEFINE_NEXUS_DEVICE(tsec, 0, RTEMS_ARRAY_SIZE(tsec0_res),
 #elif defined(LIBBSP_ARM_RASPBERRYPI_BSP_H)
 
 #include <bsp/raspberrypi.h>
+#include <bsp/irq.h>
 
 static const rtems_bsd_device_resource rpi_emmc_res[] = {
 	{
 		.type = RTEMS_BSD_RES_MEMORY,
 		.start_request = 0,
 		.start_actual = BCM2835_EMMC_BASE
+	}, {
+		.type = RTEMS_BSD_RES_IRQ,
+		.start_request = 0,
+		.start_actual = 62
 	}
 };
 
-RTEMS_BSD_DEFINE_NEXUS_DEVICE(sdhci, 0, RTEMS_ARRAY_SIZE(rpi_emmc_res),
+static const rtems_bsd_device_resource rpi_mbox_res[] = {
+	{
+		.type = RTEMS_BSD_RES_MEMORY,
+		.start_request = 0,
+		.start_actual = 0x2000B880
+	}, {
+		.type = RTEMS_BSD_RES_IRQ,
+		.start_request = 0,
+		.start_actual = BCM2835_IRQ_ID_MAILBOX_0
+	}
+};
+
+static const rtems_bsd_device_resource rpi_dma_res[] = {
+	{
+		.type = RTEMS_BSD_RES_MEMORY,
+		.start_request = 0,
+		.start_actual = 0x20007000
+	}
+};
+
+RTEMS_BSD_DEFINE_NEXUS_DEVICE(sdhci_bcm, 0, RTEMS_ARRAY_SIZE(rpi_emmc_res),
     &rpi_emmc_res[0]);
 
-SYSINIT_DRIVER_REFERENCE(mmc, sdhci);
+SYSINIT_DRIVER_REFERENCE(mmc, sdhci_bcm);
 SYSINIT_DRIVER_REFERENCE(mmcsd, mmc);
+
+RTEMS_BSD_DEFINE_NEXUS_DEVICE(mbox,0,RTEMS_ARRAY_SIZE(rpi_mbox_res),
+    &rpi_mbox_res[0]);
+
+RTEMS_BSD_DEFINE_NEXUS_DEVICE(bcm_dma, 0, RTEMS_ARRAY_SIZE(rpi_dma_res),
+    &rpi_dma_res[0]);
 
 #endif
