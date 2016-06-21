@@ -1725,13 +1725,15 @@ static device_method_t mmc_methods[] = {
 	DEVMETHOD_END
 };
 
-static driver_t mmc_driver = {
+driver_t mmc_driver = {
 	"mmc",
 	mmc_methods,
 	sizeof(struct mmc_softc),
 };
-static devclass_t mmc_devclass;
+devclass_t mmc_devclass;
 
 DRIVER_MODULE(mmc, at91_mci, mmc_driver, mmc_devclass, NULL, NULL);
 DRIVER_MODULE(mmc, dw_mmc, mmc_driver, mmc_devclass, NULL, NULL);
-DRIVER_MODULE(mmc, sdhci, mmc_driver, mmc_devclass, NULL, NULL);
+#if defined(LIBBSP_ARM_RASPBERRYPI_BSP_H)
+	DRIVER_MODULE(mmc, sdhci, mmc_driver, mmc_devclass, NULL, NULL);
+#endif

@@ -1108,7 +1108,6 @@ def build(bld):
     if bld.get_env()["RTEMS_ARCH"] == "arm":
         source += ['freebsd/sys/mips/mips/in_cksum.c',
                    'freebsd/sys/arm/broadcom/bcm2835/bcm2835_dma.c',
-                   'freebsd/sys/arm/broadcom/bcm2835/bcm2835_mbox.c',
                    'freebsd/sys/arm/broadcom/bcm2835/bcm2835_sdhci.c',]
     if bld.get_env()["RTEMS_ARCH"] == "avr":
         source += ['freebsd/sys/mips/mips/in_cksum.c']

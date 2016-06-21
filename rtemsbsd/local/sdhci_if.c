@@ -4,7 +4,7 @@
 #include <sys/queue.h>
 #include <sys/kernel.h>
 #include <sys/kobj.h>
-#include <rtems/bsd/sys/types.h>
+#include <sys/types.h>
 #include <sys/systm.h>
 #include <rtems/bsd/sys/lock.h>
 #include <sys/mutex.h>

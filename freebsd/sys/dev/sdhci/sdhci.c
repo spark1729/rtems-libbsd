@@ -1,4 +1,5 @@
 #include <machine/rtems-bsd-kernel-space.h>
+
 /*-
  * Copyright (c) 2008 Alexander Motin <mav@FreeBSD.org>
  * All rights reserved.
@@ -603,7 +604,11 @@ sdhci_init_slot(device_t dev, struct sdhci_slot *slot, int num)
 		slot->quirks |= SDHCI_QUIRK_BROKEN_TIMEOUT_VAL;
 	}
 
+#ifndef __rtems__
 	slot->host.f_min = SDHCI_MIN_FREQ(slot->bus, slot);
+#elif defined(LIBBSP_ARM_RASPBERRYPI_BSP_H) /* __rtems__ */
+	slot->host.f_min=400000;
+#endif /* __rtems__ */
 	slot->host.f_max = slot->max_clk;
 	slot->host.host_ocr = 0;
 	if (caps & SDHCI_CAN_VDD_330)
@@ -651,11 +656,13 @@ sdhci_init_slot(device_t dev, struct sdhci_slot *slot, int num)
 	}
 
 	slot->timeout = 10;
+#ifndef __rtems__
 	SYSCTL_ADD_INT(device_get_sysctl_ctx(slot->bus),
 	    SYSCTL_CHILDREN(device_get_sysctl_tree(slot->bus)), OID_AUTO,
 	    "timeout", CTLFLAG_RW, &slot->timeout, 0,
 	    "Maximum timeout for SDHCI transfers (in secs)");
 	TASK_INIT(&slot->card_task, 0, sdhci_card_task, slot);
+#endif /* __rtems__ */
 	callout_init(&slot->card_callout, 1);
 	callout_init_mtx(&slot->timeout_callout, &slot->mtx, 0);
 

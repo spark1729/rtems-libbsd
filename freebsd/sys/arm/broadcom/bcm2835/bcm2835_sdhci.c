@@ -56,8 +56,8 @@ __FBSDID("$FreeBSD$");
 #include <dev/sdhci/sdhci.h>
 #include <rtems/bsd/local/sdhci_if.h>
 
+#include <bsp/vc.h>
 #include "bcm2835_dma.h"
-#include <arm/broadcom/bcm2835/bcm2835_mbox_prop.h>
 #include "bcm2835_vcbus.h"
 
 #ifdef __rtems__
@@ -157,22 +157,24 @@ bcm_sdhci_attach(device_t dev)
 	sc->sc_dev = dev;
 	sc->sc_req = NULL;
 
-	err = bcm2835_mbox_set_power_state(BCM2835_MBOX_POWER_ID_EMMC,
-	    TRUE);
+#ifndef __rtems__
+	bcm2835_set_power_state_entries power_state_sd;
+	power_state_sd.dev_id=bcm2835_mailbox_power_udid_sd_card;
+	power_state_sd.state=BCM2835_MAILBOX_SET_POWER_STATE_REQ_ON ;
+	err = bcm2835_mailbox_set_power_state(&power_state_sd);
+	printk("Enable the power returns %d\n", err);
 	if (err != 0) {
 		if (bootverbose)
-			device_printf(dev, "Unable to enable the power\n");
+		device_printf(dev, "Unable to enable the power\n");
 		return (err);
 	}
-
 	default_freq = 0;
-	err = bcm2835_mbox_get_clock_rate(BCM2835_MBOX_CLOCK_ID_EMMC,
+	err = bcm2835_mbox_get_clock_rate(0x000000001,
 	    &default_freq);
 	if (err == 0) {
 		/* Convert to MHz */
 		default_freq /= 1000000;
 	}
-#ifndef __rtems__
 	if (default_freq == 0) {
 		node = ofw_bus_get_node(sc->sc_dev);
 		if ((OF_getencprop(node, "clock-frequency", &cell,
@@ -690,7 +692,5 @@ MODULE_DEPEND(sdhci_bcm, sdhci, 1, 1, 1);
 DRIVER_MODULE(sdhci_bcm, nexus, bcm_sdhci_driver, bcm_sdhci_devclass, 0, 0);
 MODULE_DEPEND(sdhci_bcm, sdhci, 1, 1, 1);
 #endif  /* __rtems__ */
-#ifndef __rtems__
 DRIVER_MODULE(mmc, sdhci_bcm, mmc_driver, mmc_devclass, NULL, NULL);
 MODULE_DEPEND(sdhci_bcm, mmc, 1, 1, 1);
-#endif /* __rtems__ */
