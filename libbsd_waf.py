@@ -1038,7 +1038,9 @@ def build(bld):
               'rtemsbsd/telnetd/pty.c',
               'rtemsbsd/telnetd/telnetd.c']
     if bld.get_env()["RTEMS_ARCH"] == "arm":
-        source += ['freebsd/sys/mips/mips/in_cksum.c']
+        source += ['freebsd/sys/mips/mips/in_cksum.c',
+                   'freebsd/sys/arm/broadcom/bcm2835/bcm2835_dma.c',
+                   'freebsd/sys/arm/broadcom/bcm2835/bcm2835_sdhci.c',]
     if bld.get_env()["RTEMS_ARCH"] == "avr":
         source += ['freebsd/sys/mips/mips/in_cksum.c']
     if bld.get_env()["RTEMS_ARCH"] == "bfin":
