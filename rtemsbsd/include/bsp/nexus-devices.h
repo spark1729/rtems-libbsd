@@ -104,6 +104,22 @@ static const rtems_bsd_device_resource rpi_emmc_res[] = {
 		.type = RTEMS_BSD_RES_MEMORY,
 		.start_request = 0,
 		.start_actual = BCM2835_EMMC_BASE
+	}, {
+		.type = RTEMS_BSD_RES_IRQ,
+		.start_request = 0,
+		.start_actual = 62
+	}
+};
+
+static const rtems_bsd_device_resource rpi_dma_res[] = {
+	{
+		.type = RTEMS_BSD_RES_MEMORY,
+		.start_request = 0,
+		.start_actual = 0x20007000
+	}, {
+		.type = RTEMS_BSD_RES_IRQ,
+		.start_request = 0,
+		.start_actual = 16
 	}
 };
 
@@ -112,6 +128,9 @@ RTEMS_BSD_DEFINE_NEXUS_DEVICE(sdhci, 0, RTEMS_ARRAY_SIZE(rpi_emmc_res),
 
 SYSINIT_DRIVER_REFERENCE(mmc, sdhci);
 SYSINIT_DRIVER_REFERENCE(mmcsd, mmc);
+
+RTEMS_BSD_DEFINE_NEXUS_DEVICE(bcm_dma, 0, RTEMS_ARRAY_SIZE(rpi_dma_res),
+    &rpi_dma_res[0]);
 
 #endif
 
