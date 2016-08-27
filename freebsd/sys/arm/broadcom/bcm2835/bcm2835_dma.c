@@ -42,10 +42,12 @@ __FBSDID("$FreeBSD$");
 #include <rtems/bsd/sys/resource.h>
 #include <sys/rman.h>
 
+#ifndef __rtems__
 #include <dev/fdt/fdt_common.h>
 #include <dev/ofw/openfirm.h>
 #include <dev/ofw/ofw_bus.h>
 #include <dev/ofw/ofw_bus_subr.h>
+#endif /* __rtems__ */
 
 #include <vm/vm.h>
 #include <vm/pmap.h>
@@ -657,11 +659,13 @@ static int
 bcm_dma_probe(device_t dev)
 {
 
+#ifndef __rtems__
 	if (!ofw_bus_status_okay(dev))
 		return (ENXIO);
 
 	if (!ofw_bus_is_compatible(dev, "broadcom,bcm2835-dma"))
 		return (ENXIO);
+#endif /* __rtems__ */
 
 	device_set_desc(dev, "BCM2835 DMA Controller");
 	return (BUS_PROBE_DEFAULT);
@@ -671,7 +675,9 @@ static int
 bcm_dma_attach(device_t dev)
 {
 	struct bcm_dma_softc *sc = device_get_softc(dev);
+#ifndef __rtems__
 	phandle_t node;
+#endif /* __rtems__ */
 	int rid, err = 0;
 	int i;
 
@@ -685,6 +691,7 @@ bcm_dma_attach(device_t dev)
 		sc->sc_intrhand[i] = NULL;
 	}
 
+#ifndef __rtems__
 	/* Get DMA channel mask. */
 	node = ofw_bus_get_node(sc->sc_dev);
 	if (OF_getencprop(node, "brcm,dma-channel-mask", &bcm_dma_channel_mask,
@@ -694,7 +701,7 @@ bcm_dma_attach(device_t dev)
 		device_printf(dev, "could not get channel mask property\n");
 		return (ENXIO);
 	}
-
+#endif /* __rtems__ */
 	/* Mask out channels used by GPU. */
 	bcm_dma_channel_mask &= ~BCM_DMA_CH_GPU_MASK;
 
@@ -764,5 +771,10 @@ static driver_t bcm_dma_driver = {
 
 static devclass_t bcm_dma_devclass;
 
+#ifndef __rtems__
 DRIVER_MODULE(bcm_dma, simplebus, bcm_dma_driver, bcm_dma_devclass, 0, 0);
 MODULE_VERSION(bcm_dma, 1);
+#else /* __rtems__ */
+DRIVER_MODULE(bcm_dma, nexus, bcm_dma_driver, bcm_dma_devclass, 0, 0);
+MODULE_VERSION(bcm_dma, 1);
+#endif /* __rtems__ */

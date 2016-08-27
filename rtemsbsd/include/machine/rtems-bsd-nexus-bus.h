@@ -172,6 +172,27 @@ extern "C" {
 #endif /* RTEMS_BSD_DRIVER_MMC */
 
 /*
+ * [BCM2835] Raspberry Pi DMA Controller
+ */
+#if !defined(RTEMS_BSD_DRIVER_BCM2835_DMA)
+  #define RTEMS_BSD_DRIVER_BCM2835_DMA(_base, _irq)                  \
+    static const rtems_bsd_device_resource rpi_dma_res[] = {     \
+      {                                                          \
+        .type = RTEMS_BSD_RES_MEMORY,                            \
+        .start_request = 0,                                      \
+        .start_actual = (_base)                                  \
+      }, {                                                       \
+        .type = RTEMS_BSD_RES_IRQ,                               \
+        .start_request = 0,                                      \
+        .start_actual = (_irq)                                   \
+      }                                                          \
+    };                                                           \
+    RTEMS_BSD_DEFINE_NEXUS_DEVICE(bcm_dma, 0,                     \
+                                  RTEMS_ARRAY_SIZE(rpi_dma_res), \
+                                  &rpi_dma_res[0])
+#endif /* RTEMS_BSD_DRIVER_BCM2835_DMA */
+
+/*
  * USB Drivers.
  */
 #if !defined(RTEMS_BSD_DRIVER_USB)
