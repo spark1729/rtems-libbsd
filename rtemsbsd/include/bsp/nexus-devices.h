@@ -95,6 +95,13 @@ RTEMS_BSD_DRIVER_TSEC(0xffeb0000,
 
 #endif /* !QORIQ_CHIP_IS_T_VARIANT(QORIQ_CHIP_VARIANT) */
 
+#elif defined(LIBBSP_ARM_RASPBERRYPI_BSP_H)
+
+#include <bsp/raspberrypi.h>
+#include <bsp/irq.h>
+
+RTEMS_BSD_DRIVER_BCM2835_DMA((unsigned long)0x20007000, 16);
+
 #endif
 
 #endif
