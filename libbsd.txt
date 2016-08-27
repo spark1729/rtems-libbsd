@@ -780,6 +780,7 @@ detail and debug level information from the command.
 . sys/dev/mmc/*, trunk, 2016-08-23, 9fe7c416e6abb28b1398fd3e5687099846800cfd
 . sys/dev/usb/*, trunk, 2016-08-23, 9fe7c416e6abb28b1398fd3e5687099846800cfd
 . sys/dev/sdhci/*, trunk, 2016-08-23, 9fe7c416e6abb28b1398fd3e5687099846800cfd
+. sys/arm/broadcom/bcm2835/*, trunk, 2016-08-23, 9fe7c416e6abb28b1398fd3e5687099846800cfd
 . *, stable/9, 2015-04-08, 99a648a912e81e29d9c4c159cbbe263462f2d719
 
 == How to import code from FreeBSD

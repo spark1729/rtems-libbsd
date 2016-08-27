@@ -56,6 +56,7 @@ def rtems(mm):
             'local/usb_if.c',
             'local/mmcbus_if.c',
             'local/mmcbr_if.c',
+            'local/sdhci_if.c',
             'rtems/ipsec_get_policylen.c',
             'rtems/rtems-bsd-arp-processor.c',
             'rtems/rtems-bsd-allocator-domain-size.c',
@@ -385,6 +386,7 @@ def mmc(mm):
         [ 'arm' ],
         [
             'sys/arm/broadcom/bcm2835/bcm2835_dma.c',
+            'sys/arm/broadcom/bcm2835/bcm2835_sdhci.c',
         ],
     mm.generator['source']()
     )
