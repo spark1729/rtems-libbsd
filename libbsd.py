@@ -367,6 +367,12 @@ def mmc(mm):
             'sys/dev/sdhci/sdhci.h',
         ]
     )
+    mod.addCPUDependentHeaderFiles(
+        [
+            'sys/arm/broadcom/bcm2835/bcm2835_dma.h',
+            'sys/arm/broadcom/bcm2835/bcm2835_vcbus.h',
+        ]
+    )
     mod.addKernelSpaceSourceFiles(
         [
             'sys/dev/mmc/mmc.c',
@@ -374,6 +380,13 @@ def mmc(mm):
             'sys/dev/sdhci/sdhci.c',
         ],
         mm.generator['source']()
+    )
+    mod.addCPUDependentSourceFiles(
+        [ 'arm' ],
+        [
+            'sys/arm/broadcom/bcm2835/bcm2835_dma.c',
+        ],
+    mm.generator['source']()
     )
     return mod
 
