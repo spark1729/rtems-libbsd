@@ -1047,6 +1047,7 @@ def build(bld):
               'rtemsbsd/local/mmcbus_if.c',
               'rtemsbsd/local/pci_if.c',
               'rtemsbsd/local/pcib_if.c',
+              'rtemsbsd/local/sdhci_if.c',
               'rtemsbsd/local/usb_if.c',
               'rtemsbsd/mdns/mdns-hostname-default.c',
               'rtemsbsd/mdns/mdns.c',

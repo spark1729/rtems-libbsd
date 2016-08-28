@@ -273,7 +273,11 @@ struct sdhci_slot {
 	device_t	dev;		/* Slot device */
 	u_char		num;		/* Slot number */
 	u_char		opt;		/* Slot options */
+#ifndef __rtems__
 #define SDHCI_HAVE_DMA			1
+#else /* rtems */
+#define SDHCI_HAVE_DMA			0
+#endif /* __rtems__ */
 #define SDHCI_PLATFORM_TRANSFER		2
 	u_char		version;
 	int		timeout;	/* Transfer timeout */
@@ -284,6 +288,7 @@ struct sdhci_slot {
 	u_char		*dmamem;
 	bus_addr_t	paddr;		/* DMA buffer address */
 	struct task	card_task;	/* Card presence check task */
+	struct taskqueue *sdhci_tq;
 	struct callout	card_callout;	/* Card insert delay callout */
 	struct callout	timeout_callout;/* Card command/data response timeout */
 	struct mmc_host host;		/* Host parameters */
