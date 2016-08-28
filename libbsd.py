@@ -2571,6 +2571,7 @@ def tests(mm):
     mod.addTest(mm.generator['test']('timeout01', ['init', 'timeout_test']))
     mod.addTest(mm.generator['test']('init01', ['test_main']))
     mod.addTest(mm.generator['test']('thread01', ['test_main']))
+    mod.addTest(mm.generator['test']('sdhci01', ['test_main']))
     mod.addTest(mm.generator['test']('mutex01', ['test_main']))
     mod.addTest(mm.generator['test']('condvar01', ['test_main']))
     mod.addTest(mm.generator['test']('ppp01', ['test_main'], runTest = False))
