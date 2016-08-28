@@ -1482,6 +1482,16 @@ def build(bld):
                 lib = ["m", "z"],
                 install_path = None)
 
+    test_sdhci01 = ['testsuite/sdhci01/test_main.c']
+    bld.program(target = "sdhci01.exe",
+                features = "cprogram",
+                cflags = cflags,
+                includes = includes,
+                source = test_sdhci01,
+                use = ["bsd"],
+                lib = ["m", "z"],
+                install_path = None)
+
     test_selectpollkqueue01 = ['testsuite/selectpollkqueue01/test_main.c']
     bld.program(target = "selectpollkqueue01.exe",
                 features = "cprogram",
