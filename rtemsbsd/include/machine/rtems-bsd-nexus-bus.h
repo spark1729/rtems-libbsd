@@ -172,6 +172,32 @@ extern "C" {
 #endif /* RTEMS_BSD_DRIVER_MMC */
 
 /*
+ * [BCM2835] Raspberry Pi Arasan SDHCI Controller
+ */
+#if !defined(RTEMS_BSD_DRIVER_BCM2835_SDHCI)
+  #define RTEMS_BSD_DRIVER_BCM2835_SDHCI                         \
+    SYSINIT_DRIVER_REFERENCE(mmc, sdhci_bcm)
+#endif
+
+#if !defined(RTEMS_BSD_DRIVER_BCM2835_SD)
+  #define RTEMS_BSD_DRIVER_BCM2835_SD(_base, _irq)               \
+    static const rtems_bsd_device_resource rpi_emmc_res[] = {    \
+      {                                                          \
+        .type = RTEMS_BSD_RES_MEMORY,                            \
+        .start_request = 0,                                      \
+        .start_actual = (_base)                                  \
+      }, {                                                       \
+        .type = RTEMS_BSD_RES_IRQ,                               \
+        .start_request = 0,                                      \
+        .start_actual = (_irq)                                   \
+      }                                                          \
+    };                                                           \
+    RTEMS_BSD_DEFINE_NEXUS_DEVICE(sdhci_bcm, 0,                  \
+                                  RTEMS_ARRAY_SIZE(rpi_emmc_res),\
+                                  &rpi_emmc_res[0])
+#endif /* RTEMS_BSD_DRIVER_BCM2835_SD */
+
+/*
  * [BCM2835] Raspberry Pi DMA Controller
  */
 #if !defined(RTEMS_BSD_DRIVER_BCM2835_DMA)

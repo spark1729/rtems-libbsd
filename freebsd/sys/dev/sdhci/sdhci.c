@@ -482,7 +482,11 @@ sdhci_card_delay(void *arg)
 {
 	struct sdhci_slot *slot = arg;
 
+#ifndef __rtems__
 	taskqueue_enqueue(taskqueue_swi_giant, &slot->card_task);
+#else /* __rtems__ */
+	taskqueue_enqueue(slot->sdhci_tq, &slot->card_task);
+#endif  /* __rtems__ */
 }
  
 static void
@@ -601,8 +605,11 @@ sdhci_init_slot(device_t dev, struct sdhci_slot *slot, int num)
 		    "frequency, setting BROKEN_TIMEOUT quirk.\n");
 		slot->quirks |= SDHCI_QUIRK_BROKEN_TIMEOUT_VAL;
 	}
-
+#ifndef __rtems__
 	slot->host.f_min = SDHCI_MIN_FREQ(slot->bus, slot);
+#else /* __rtems__ */
+	slot->host.f_min = 400000;
+#endif /* __rtems__ */
 	slot->host.f_max = slot->max_clk;
 	slot->host.host_ocr = 0;
 	if (caps & SDHCI_CAN_VDD_330)
@@ -650,10 +657,12 @@ sdhci_init_slot(device_t dev, struct sdhci_slot *slot, int num)
 	}
 
 	slot->timeout = 10;
+#ifndef __rtems__
 	SYSCTL_ADD_INT(device_get_sysctl_ctx(slot->bus),
 	    SYSCTL_CHILDREN(device_get_sysctl_tree(slot->bus)), OID_AUTO,
 	    "timeout", CTLFLAG_RW, &slot->timeout, 0,
 	    "Maximum timeout for SDHCI transfers (in secs)");
+#endif
 	TASK_INIT(&slot->card_task, 0, sdhci_card_task, slot);
 	callout_init(&slot->card_callout, 1);
 	callout_init_mtx(&slot->timeout_callout, &slot->mtx, 0);
@@ -674,7 +683,11 @@ sdhci_cleanup_slot(struct sdhci_slot *slot)
 
 	callout_drain(&slot->timeout_callout);
 	callout_drain(&slot->card_callout);
+#ifndef __rtems__
 	taskqueue_drain(taskqueue_swi_giant, &slot->card_task);
+#else /* __rtems__ */
+	taskqueue_drain(slot->sdhci_tq, &slot->card_task);
+#endif  /* __rtems__ */
 
 	SDHCI_LOCK(slot);
 	d = slot->dev;
@@ -1332,8 +1345,13 @@ sdhci_generic_intr(struct sdhci_slot *slot)
 			if (bootverbose || sdhci_debug)
 				slot_printf(slot, "Card removed\n");
 			callout_stop(&slot->card_callout);
+#ifndef __rtems__
 			taskqueue_enqueue(taskqueue_swi_giant,
 			    &slot->card_task);
+#else /* __rtems__ */
+			taskqueue_enqueue(slot->sdhci_tq,
+			    &slot->card_task);
+#endif  /* __rtems__ */
 		}
 		if (intmask & SDHCI_INT_CARD_INSERT) {
 			if (bootverbose || sdhci_debug)

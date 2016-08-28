@@ -100,6 +100,9 @@ RTEMS_BSD_DRIVER_TSEC(0xffeb0000,
 #include <bsp/raspberrypi.h>
 #include <bsp/irq.h>
 
+RTEMS_BSD_DRIVER_BCM2835_SD((unsigned long)BCM2835_EMMC_BASE, 62);
+RTEMS_BSD_DRIVER_BCM2835_SDHCI;
+RTEMS_BSD_DRIVER_MMC;
 RTEMS_BSD_DRIVER_BCM2835_DMA((unsigned long)0x20007000, 16);
 
 #endif
